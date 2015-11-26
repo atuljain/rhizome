@@ -228,9 +228,9 @@ class IndicatorResource(BaseNonModelResource):
             WHERE EXISTS (
                 SELECT 1 FROM location l
                 WHERE dwc.location_id = l.id
-                AND l.office_id IN (%s)
+                AND l.office_id = ANY(%s)
             )
-        ''', [office_ids])
+        ''', [map(lambda office_id: int(office_id), office_ids.split(','))])
 
         for ind in i_raw:
             indicator_ids.append(ind.id)
