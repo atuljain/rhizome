@@ -42,7 +42,7 @@ var MenuItem = React.createClass({
   },
 
   getInitialState: function () {
-    return {open: false}
+    return {open: false, selected: false}
   },
 
   _toggleChildren: function (e) {
@@ -52,6 +52,7 @@ var MenuItem = React.createClass({
 
   _handleClick: function (e) {
     if (!this.props.noValue) {
+      this.setState({selected: !this.state.selected})
       this.props.sendValue(this.props.value)
     } else {
       this._toggleChildren(e)
@@ -60,7 +61,8 @@ var MenuItem = React.createClass({
 
   render: function () {
     var hasChildren = !this.props.filtered && _.isArray(this.props.children) && this.props.children.length > 0
-    var itemStyle = {'paddingLeft': (this.state.filtered ? '5px' : (5 + (17 * this.props.depth)) + 'px')}
+    var itemStyle = {'paddingLeft': (this.state.filtered ? '5px' : (5 + (17 * this.props.depth)) + 'px'),
+                     'marginTop': '5px'}
 
     var children = null
     if (this.props.children && this.state.open) {
@@ -79,7 +81,7 @@ var MenuItem = React.createClass({
           role='menuitem'
           onClick={this._handleClick}
           style={itemStyle}
-          className={hasChildren ? 'folder' : null}
+          className={(hasChildren ? 'folder' : '')  + ' ' + (this.state.selected ? 'chart-wizard__menu-item--active' : '')}
           tabIndex='-1'>
 
           <i
