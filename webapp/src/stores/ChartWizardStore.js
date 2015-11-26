@@ -36,9 +36,10 @@ let ChartWizardStore = Reflux.createStore({
   },
   LAYOUT_PREVIEW: 0,
 
-  filterCampaignByLocation (campaigns, location) {
+  filterCampaignByLocations (campaigns, locations) {
+    let locationIds = locations.map(location => location.office_id)
     return campaigns.filter(campaign => {
-      return campaign.office_id === location.office_id
+      return _.includes(locationIds, campaign.office_id)
     })
   },
 
@@ -142,7 +143,7 @@ let ChartWizardStore = Reflux.createStore({
       .value()
 
     this.campaignIndex = _.indexBy(this.campaignList, 'id')
-    this.data.campaignFilteredList = this.filterCampaignByLocation(this.campaignList, this.data.location)
+    this.data.campaignFilteredList = this.filterCampaignByLocations(this.campaignList, [this.data.location])
     this.data.timeRangeFilteredList = this.filterTimeRangeByChartType(builderDefinitions.times, this.data.chartDef.type)
     this.data.chartTypeFilteredList = builderDefinitions.charts
 
@@ -341,7 +342,7 @@ let ChartWizardStore = Reflux.createStore({
         })
       }
 
-      this.data.campaignFilteredList = this.filterCampaignByLocation(this.campaignList, locations[0])
+      this.data.campaignFilteredList = this.filterCampaignByLocations(this.campaignList, locations)
       let newCampaign = this.data.campaignFilteredList.filter(campaign => {
         return moment(campaign.start_date).format() === moment(this.data.campaign.start_date).format()
       })
