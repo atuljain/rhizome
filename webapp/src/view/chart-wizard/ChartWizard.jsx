@@ -17,6 +17,7 @@ import RadioGroup from 'component/radio-group/RadioGroup.jsx'
 import ScatterAxisChooser from './ScatterAxisChooser.jsx'
 import MapAxisChooser from './MapAxisChooser.jsx'
 import PalettePicker from './PalettePicker.jsx'
+import CheckBoxGroup from 'component/check-box/CheckBoxGroup.jsx'
 
 import ChartWizardActions from 'actions/ChartWizardActions'
 import ChartWizardStore from 'stores/ChartWizardStore'
@@ -118,7 +119,7 @@ let ChartWizard = React.createClass({
     let countryStep = (
       <div>
         <p className='chart-wizard__para'>Which country's data will the new chart visualise?</p>
-        {countries}
+        <CheckBoxGroup name='countries' values={this.state.data.countryList} sendValue={ChartWizardActions.selectCountry}/>
         <span className='chart-wizard__next' onClick={this.toggleStep.bind(null, 'first-indicator')}>Next</span>
       </div>
     )
