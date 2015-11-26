@@ -117,8 +117,8 @@ let ChartWizardStore = Reflux.createStore({
       ? this.locationIndex[this.data.chartDef.locationValue]
       : this.locationIndex[this.data.locationList[0].value]
 
-    this.data.country = this.data.location
-    let officeId = this.data.country.office_id
+    this.data.countries = [this.data.location]
+    let officeId = this.data.location.office_id
 
     let indicators = await api.indicatorsTree({ office_id: officeId })
 
@@ -189,11 +189,11 @@ let ChartWizardStore = Reflux.createStore({
     this.data.chartDef.title = value
   },
 
-  onSelectCountry (index) {
-    this.data.country = this.locationIndex[index]
-    this.data.locationSelected = builderDefinitions.locationLevels[this.data.locationLevelValue].getAggregated(this.data.country, this.locationIndex)
-    this.data.subLocationList = _.select(this.data.locationList, location => location.value === this.data.country.id)
-    this.updateIndicatorAndCampaign(this.data.country)
+  onSelectCountry (countryIndexes) {
+    this.data.countries = countryIndexes.map((index) => this.locationIndex[index])
+    this.data.locationSelected = this.data.countries[0]
+    this.data.subLocationList = _.select(this.data.locationList, location => location.value === this.data.countries[0].id)
+    this.updateIndicatorAndCampaign(this.data.countries)
   },
 
   onAddLocation (index) {
@@ -330,8 +330,8 @@ let ChartWizardStore = Reflux.createStore({
     })
   },
 
-  updateIndicatorAndCampaign (location) {
-    api.indicatorsTree({ office_id: location.office_id }).then(indicators => {
+  updateIndicatorAndCampaign (locations) {
+    api.indicatorsTree({ office_id: locations.map((location) => location.office_id).join(',') }).then(indicators => {
       this.indicatorIndex = _.indexBy(indicators.flat, 'id')
       this.data.indicatorList = _.sortBy(indicators.objects, 'title')
       if(this.data.chartDef.indicators.length > 0) {
@@ -340,13 +340,12 @@ let ChartWizardStore = Reflux.createStore({
         })
       }
 
-      this.data.campaignFilteredList = this.filterCampaignByLocation(this.campaignList, location)
+      this.data.campaignFilteredList = this.filterCampaignByLocation(this.campaignList, locations[0])
       let newCampaign = this.data.campaignFilteredList.filter(campaign => {
         return moment(campaign.start_date).format() === moment(this.data.campaign.start_date).format()
       })
       this.data.campaign = newCampaign.length > 0 ? newCampaign[0] : this.data.campaignFilteredList[0]
       this.previewChart()
-      console.log('this.data.indicatorSelected', this.data.indicatorSelected)
     })
   }
 })
