@@ -67,7 +67,7 @@ let ChartWizardStore = Reflux.createStore({
 
   applyChartDef (chartDef) {
     this.data.locationLevelValue = Math.max(_.findIndex(builderDefinitions.locationLevels, { value: chartDef.locations }), 0)
-    this.data.locationSelected = builderDefinitions.locationLevels[this.data.locationLevelValue].getAggregated(this.data.location, this.locationIndex)
+    this.data.locationSelected = this.data.locations
     this.data.groupByValue = Math.max(_.findIndex(builderDefinitions.groups, { value: chartDef.groupBy }), 0)
     this.data.timeValue = Math.max(_.findIndex(this.data.timeRangeFilteredList, { json: chartDef.timeRange }), 0)
     this.data.yFormatValue = Math.max(_.findIndex(builderDefinitions.formats, { value: chartDef.yFormat }), 0)
@@ -114,12 +114,12 @@ let ChartWizardStore = Reflux.createStore({
         }
       })
 
-    this.data.location = this.data.chartDef.locationValue && this.locationIndex[this.data.chartDef.locationValue]
+    this.data.locations = [this.data.chartDef.locationValue && this.locationIndex[this.data.chartDef.locationValue]
       ? this.locationIndex[this.data.chartDef.locationValue]
-      : this.locationIndex[this.data.locationList[0].value]
+      : this.locationIndex[this.data.locationList[0].value]]
 
-    this.data.countries = [this.data.location]
-    let officeId = this.data.location.office_id
+    this.data.countries = this.data.locations
+    let officeId = this.data.locations[0].office_id
 
     let indicators = await api.indicatorsTree({ office_id: officeId })
 
@@ -143,7 +143,7 @@ let ChartWizardStore = Reflux.createStore({
       .value()
 
     this.campaignIndex = _.indexBy(this.campaignList, 'id')
-    this.data.campaignFilteredList = this.filterCampaignByLocations(this.campaignList, [this.data.location])
+    this.data.campaignFilteredList = this.filterCampaignByLocations(this.campaignList, this.data.locations)
     this.data.timeRangeFilteredList = this.filterTimeRangeByChartType(builderDefinitions.times, this.data.chartDef.type)
     this.data.chartTypeFilteredList = builderDefinitions.charts
 
@@ -192,7 +192,8 @@ let ChartWizardStore = Reflux.createStore({
 
   onSelectCountry (countryIndexes) {
     this.data.countries = countryIndexes.map((index) => this.locationIndex[index])
-    this.data.locationSelected = this.data.countries[0]
+    this.data.locations = this.data.countries
+    this.data.locationSelected = this.data.countries
     let subLocationsForCountry = _.select(this.data.locationList, location => _.includes(countryIndexes, '' + location.value))
     this.data.subLocationList = _.flatten(subLocationsForCountry.map((locationList) => locationList.children))
     this.updateIndicatorAndCampaign(this.data.countries)
@@ -200,7 +201,7 @@ let ChartWizardStore = Reflux.createStore({
 
   onAddLocation (locationIndexes) {
     this.data.locations = locationIndexes.map((index) => this.locationIndex[index])
-    this.data.locationSelected = this.data.locations[0]
+    this.data.locationSelected = this.data.locations
     this.updateIndicatorAndCampaign(this.data.locations)
   },
 
@@ -238,7 +239,7 @@ let ChartWizardStore = Reflux.createStore({
     }
     this.data.chartDef.x = this.data.indicatorSelected[0].id
 
-    this.data.locationSelected = builderDefinitions.locationLevels[this.data.locationLevelValue].getAggregated(this.data.location, this.locationIndex)
+    this.data.locationSelected = this.data.locations
     this.data.chartData = []
     this.previewChart()
   },
@@ -251,7 +252,7 @@ let ChartWizardStore = Reflux.createStore({
 
   onChangeLocationLevelRadio (value) {
     this.data.locationLevelValue = value
-    this.data.locationSelected = builderDefinitions.locationLevels[value].getAggregated(this.data.location, this.locationIndex)
+    this.data.locationSelected = this.data.locations
     this.previewChart()
   },
 
@@ -300,8 +301,8 @@ let ChartWizardStore = Reflux.createStore({
           }),
           groupBy: builderDefinitions.groups[this.data.groupByValue].value,
           locations: builderDefinitions.locationLevels[this.data.locationLevelValue].value,
-          locationValue: this.data.location.id,
-          campaignValue: this.data.campaign.id,
+//          locationValue: this.data.location.id,
+//          campaignValue: this.data.campaign.id,
           timeRange: this.data.timeRangeFilteredList[this.data.timeValue].json,
           yFormat: builderDefinitions.formats[this.data.yFormatValue].value,
           xFormat: builderDefinitions.formats[this.data.xFormatValue].value
