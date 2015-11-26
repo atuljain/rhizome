@@ -192,7 +192,8 @@ let ChartWizardStore = Reflux.createStore({
   onSelectCountry (countryIndexes) {
     this.data.countries = countryIndexes.map((index) => this.locationIndex[index])
     this.data.locationSelected = this.data.countries[0]
-    this.data.subLocationList = _.select(this.data.locationList, location => location.value === this.data.countries[0].id)[0].children
+    let subLocationsForCountry = _.select(this.data.locationList, location => _.includes(countryIndexes, '' + location.value))
+    this.data.subLocationList = _.flatten(subLocationsForCountry.map((locationList) => locationList.children))
     this.updateIndicatorAndCampaign(this.data.countries)
   },
 

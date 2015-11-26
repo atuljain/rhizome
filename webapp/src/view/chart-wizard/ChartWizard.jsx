@@ -128,7 +128,7 @@ let ChartWizard = React.createClass({
     let locationStep = (
       <div>
         <p className='chart-wizard__para'>Which location’s data will the new chart use?</p>
-        <CheckBoxGroup name='subLocations' values={this.state.data.subLocationList} sendValue={ChartWizardActions.onAddLocation}/>
+        <CheckBoxGroup name='subLocations' values={this.state.data.subLocationList} sendValue={ChartWizardActions.addLocation}/>
         <span className='chart-wizard__next' onClick={this.toggleStep.bind(null, 'chart-type')}>Next</span>
       </div>
     )
