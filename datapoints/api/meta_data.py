@@ -151,8 +151,8 @@ class IndicatorResource(BaseNonModelResource):
             pass
 
         try:
-            office_id = request.GET['office_id']
-            return self.get_indicator_id_by_office(office_id)
+            office_ids = request.GET['office_id']
+            return self.get_indicator_id_by_office(office_ids)
         except KeyError:
             pass
 
@@ -218,7 +218,7 @@ class IndicatorResource(BaseNonModelResource):
 
         return indicator_batch
 
-    def get_indicator_id_by_office(self, office_id):
+    def get_indicator_id_by_office(self, office_ids):
 
         indicator_ids = []
 
@@ -228,9 +228,9 @@ class IndicatorResource(BaseNonModelResource):
             WHERE EXISTS (
                 SELECT 1 FROM location l
                 WHERE dwc.location_id = l.id
-                AND l.office_id = %s
+                AND l.office_id IN (%s)
             )
-        ''', [office_id])
+        ''', [office_ids])
 
         for ind in i_raw:
             indicator_ids.append(ind.id)
