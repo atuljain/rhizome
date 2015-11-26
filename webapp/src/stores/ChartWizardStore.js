@@ -19,7 +19,7 @@ let ChartWizardStore = Reflux.createStore({
     countryList: [],
     subLocationList: [],
     locationSelected: null,
-    country: null,
+    countries: [],
     campaignFilteredList: [],
     timeRangeFilteredList: [],
     chartTypeFilteredList: [],
@@ -192,14 +192,14 @@ let ChartWizardStore = Reflux.createStore({
   onSelectCountry (countryIndexes) {
     this.data.countries = countryIndexes.map((index) => this.locationIndex[index])
     this.data.locationSelected = this.data.countries[0]
-    this.data.subLocationList = _.select(this.data.locationList, location => location.value === this.data.countries[0].id)
+    this.data.subLocationList = _.select(this.data.locationList, location => location.value === this.data.countries[0].id)[0].children
     this.updateIndicatorAndCampaign(this.data.countries)
   },
 
-  onAddLocation (index) {
-    this.data.location = this.locationIndex[index]
-    this.data.locationSelected = builderDefinitions.locationLevels[this.data.locationLevelValue].getAggregated(this.data.location, this.locationIndex)
-    this.updateIndicatorAndCampaign(this.data.location)
+  onAddLocation (locationIndexes) {
+    this.data.locations = locationIndexes.map((index) => this.locationIndex[index])
+    this.data.locationSelected = this.data.locations[0]
+    this.updateIndicatorAndCampaign(this.data.locations)
   },
 
   onAddFirstIndicator (index) {
