@@ -27,7 +27,15 @@ class MasterRefreshJob(CronJobBase):
             filter(process_status='TO_PROCESS').\
             values_list('document_id',flat=True)[0]
 
-        print 'DOCUMENT_ID: %s' % document_id
-
         mr = MasterRefresh(user_id, document_id)
         mr.main()
+
+class MetaRefreshJob(CronJobBase):
+    RUN_EVERY_MINS = 1 ## 1400 # one day
+
+    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
+    code = 'rhizome.meta_refresh_job'    # a unique code
+
+    def do(self):
+
+        cache_all_meta()

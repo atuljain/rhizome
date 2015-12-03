@@ -39,13 +39,13 @@ export default React.createClass({
     var overlay
 
     if (this.props.loading || isEmpty(this.props.type, this.props.data, this.props.options)) {
-      var position = _.get(this.props, 'options.margin', {
+      var position = {
         top: 0,
         right: 0,
         bottom: 0,
         left: 0,
         zIndex: 9997
-      })
+      }
 
       var message = (this.props.loading)
         ? (<span><i className='fa fa-spinner fa-spin'></i>&nbsp;Loading</span>)
@@ -53,9 +53,9 @@ export default React.createClass({
 
       overlay = (this.props.isBulletChart)
         ? (
-            <div style={position} className='overlay'>
+            <div style={position} className='overlay chart__bullet--overlay'>
               <div>
-                <div className='bullet__chart--noDate'>{message}</div>
+                <div className='chart__bullet--noData'>{message}</div>
               </div>
             </div>
           )

@@ -158,6 +158,20 @@ class Office(models.Model):
         )
 
 
+class IndicatorToOffice(models.Model):
+    '''
+    Way to filter indicators in the API without querying the entire DB.  used
+    to filter indicators in the chart wizard API so user does not see Indicators
+    for which there is no data.
+    '''
+
+    indicator = models.ForeignKey(Indicator)
+    office = models.ForeignKey(Office)
+
+    class Meta:
+        db_table = 'indicator_to_office'
+
+
 class LocationType(models.Model):
     '''
     Country, Province, District, Sub-District, Settlement.
@@ -174,7 +188,7 @@ class LocationType(models.Model):
     admin_level = models.IntegerField(unique=True)
 
     def __unicode__(self):
-        return unicode(self.name)
+        return unicode(self.name + ' (Admin Level %s)' % self.admin_level)
 
     class Meta:
         db_table = 'location_type'
@@ -419,6 +433,15 @@ class IndicatorPermission(models.Model):
         db_table = 'indicator_permission'
         unique_together = ('group', 'indicator')
 
+class UserAdminLevelPermission(models.Model):
+    '''
+    '''
+
+    user = models.OneToOneField('auth.User')
+    location_type = models.ForeignKey(LocationType)
+
+    class Meta:
+        db_table = 'user_admin_level_permission'
 
 class UserGroup(models.Model):
     '''

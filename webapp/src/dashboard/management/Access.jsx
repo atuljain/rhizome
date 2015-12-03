@@ -18,10 +18,11 @@ var Access = React.createClass({
     var campaign = this.props.campaign
     var loading = this.props.loading
 
-    var reasons = _(data.inaccessibilityBreakdown)
-      .filter(d => {
+    var reasons = data.inaccessibilityBreakdown.length
+      ? _(data.inaccessibilityBreakdown).filter(d => {
         return d.campaign.id === campaign.id && _.isFinite(d.value) && d.value >= 0.01
       })
+      : data.inaccessibilityBreakdown
 
     var plans = _.filter(data.districtsWithAccessPlans,
         d => d.campaign.id === campaign.id && _.isFinite(d.value))
@@ -96,12 +97,13 @@ var Access = React.createClass({
           <Chart type='PieChart' data={plans}
                       loading={loading}
                       options={{
-                        innerRadius: 0.3,
+                        innerRadius: 0.28,
                         outerRadius: 0.5,
                         domain: _.constant([0, 1]),
                         percentage: planLabel(plans),
                         name: (d, i) => { return i },
-                        color: ['#377EA4', '#B6D0D4']
+                        color: ['#377EA4', '#B6D0D4'],
+                        notInCenter: true
                       }} />
         </div>
 
